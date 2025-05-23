@@ -34,7 +34,7 @@ const port = process.env.PORT || 3000;
 // );
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL, "https://toktoklog-front.vercel.app"],
+    origin: [process.env.FRONTEND_URL, "https://blog-leemingyu.vercel.app"],
     credentials: true,
   })
 );
