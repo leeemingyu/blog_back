@@ -6,6 +6,7 @@ import {
   deletePost,
   updatePost,
   toggleLike,
+  getPopularPosts,
 } from "../controllers/postController.js";
 import { authenticateToken } from "../middlewares/auth.js";
 import { upload } from "../middlewares/upload.js";
@@ -14,6 +15,7 @@ const router = express.Router();
 
 router.post("/", authenticateToken, upload.single("files"), createPost);
 router.get("/", getPosts);
+router.get("/popular", getPopularPosts);
 router.get("/:postId", getPostById);
 router.delete("/:postId", authenticateToken, deletePost);
 router.put("/:postId", authenticateToken, upload.single("files"), updatePost);

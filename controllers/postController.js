@@ -159,3 +159,47 @@ export const toggleLike = async (req, res) => {
     res.status(500).json({ message: "서버 에러" });
   }
 };
+
+export const getPopularPosts = async (req, res) => {
+  try {
+    const posts = await Post.aggregate([
+      // 댓글 정보 조인
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "postId",
+          as: "comments",
+        },
+      },
+      // 좋아요 수, 댓글 수 필드 추가
+      {
+        $addFields: {
+          likeCount: { $size: "$likes" },
+          commentCount: { $size: "$comments" },
+        },
+      },
+      // 정렬: 좋아요 > 댓글 > 최신
+      {
+        $sort: {
+          likeCount: -1,
+          commentCount: -1,
+          createdAt: -1,
+        },
+      },
+      // 최대 4개만 추출
+      { $limit: 3 },
+      // 댓글 내용은 제거
+      {
+        $project: {
+          comments: 0,
+        },
+      },
+    ]);
+
+    res.json({ posts });
+  } catch (err) {
+    console.error("인기 게시물 조회 오류:", err);
+    res.status(500).json({ error: "인기 게시물 조회에 실패했습니다." });
+  }
+};

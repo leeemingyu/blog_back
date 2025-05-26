@@ -1,4 +1,5 @@
 import { Comment } from "../models/Comment.js";
+import { Post } from "../models/Post.js";
 
 export const createComment = async (req, res) => {
   const { content, postId } = req.body;
@@ -82,6 +83,20 @@ export const updateComment = async (req, res) => {
     res.json(updatedComment);
   } catch (err) {
     console.error("Error updating comment:", err);
+    res.status(500).json({ message: "서버 에러" });
+  }
+};
+
+export const getRecentComments = async (req, res) => {
+  try {
+    const comments = await Comment.find()
+      .sort({ createdAt: -1 }) // 최신순
+      .limit(4) // 4개만
+      .populate("postId", "title");
+
+    res.json(comments);
+  } catch (err) {
+    console.error("Error fetching comments:", err);
     res.status(500).json({ message: "서버 에러" });
   }
 };
